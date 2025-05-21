@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BPMN Viewer with Animation</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #canvas {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* أنيميشن وميض */
+    .highlight-animate {
+      animation: flash 1s infinite;
+    }
+
+    @keyframes flash {
+      0%, 100% { stroke: red; stroke-width: 5px; }
+      50% { stroke: yellow; stroke-width: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas"></div>
+
+  <script src="https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-viewer.development.js"></script>
+
+  <script>
+    const viewer = new BpmnJS({ container: '#canvas' });
+
+    fetch('diagram.bpmn')
+      .then(response => response.text())
+      .then(xml => viewer.importXML(xml))
+      .then(() => {
+        const elementRegistry = viewer.get('elementRegistry');
+        const graphicsFactory = viewer.get('graphicsFactory');
+
+        // غيّر ID حسب العنصر اللي بدك تحط عليه الأنيميشن
+        const element = elementRegistry.get('Task_1');
+
+        if (element) {
+          const gfx = viewer.get('canvas').getGraphics(element);
+          gfx.querySelector('rect, path')?.classList.add('highlight-animate');
+        } else {
+          console.warn('ما لقيت المهمة المطلوبة. تأكد من الـ ID بـ diagram.bpmn');
+        }
+
+        viewer.get('canvas').zoom('fit-viewport');
+      })
+      .catch(err => console.error('فشل تحميل ملف BPMN', err));
+  </script>
+</body>
+</html>
