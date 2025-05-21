@@ -68,7 +68,7 @@
       for (let i = 0; i < stepIds.length; i++) {
         clearHighlights();
         canvas.addMarker(stepIds[i], 'highlight');
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       clearHighlights();
