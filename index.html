@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>BPMN User Registration Animation</title>
   <style>
     html, body {
@@ -21,9 +21,10 @@
       text-align: center;
     }
 
-    .highlight rect {
-      stroke: #ff0000;
-      stroke-width: 4;
+    /* Highlight style for BPMN elements */
+    .highlight > .djs-visual > :nth-child(1) {
+      stroke: #ff0000 !important;
+      stroke-width: 4px !important;
       fill: #fff3cd !important;
     }
   </style>
@@ -34,6 +35,7 @@
     <button onclick="startAnimation()">▶️ Run Scenario</button>
     <button onclick="resetAnimation()">🔁 Reset</button>
   </div>
+
   <div id="canvas"></div>
 
   <script src="https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-viewer.development.js"></script>
@@ -50,23 +52,26 @@
     ];
 
     async function loadDiagram() {
-      const response = await fetch('diagram.bpmn');
-      const xml = await response.text();
-      await viewer.importXML(xml);
+      try {
+        const response = await fetch('diagram.bpmn');
+        const xml = await response.text();
+        await viewer.importXML(xml);
+      } catch (err) {
+        console.error('Failed to load BPMN diagram:', err);
+      }
     }
 
     async function startAnimation() {
-      const elementRegistry = viewer.get('elementRegistry');
+      const canvas = viewer.get('canvas');
+      clearHighlights();
 
       for (let i = 0; i < stepIds.length; i++) {
         clearHighlights();
-        const element = elementRegistry.get(stepIds[i]);
-        if (element) {
-          const gfx = viewer.get('graphicsFactory').getShape(element).gfx;
-          gfx.classList.add('highlight');
-        }
+        canvas.addMarker(stepIds[i], 'highlight');
         await new Promise(resolve => setTimeout(resolve, 5000));
       }
+
+      clearHighlights();
     }
 
     function resetAnimation() {
@@ -74,7 +79,8 @@
     }
 
     function clearHighlights() {
-      document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+      const canvas = viewer.get('canvas');
+      stepIds.forEach(id => canvas.removeMarker(id, 'highlight'));
     }
 
     loadDiagram();
