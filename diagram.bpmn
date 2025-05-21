@@ -1,4 +1,30 @@
- <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="RegistrationProcess" isExecutable="true">
+    <bpmn:startEvent id="StartEvent" name="Start Registration"/>
+    <bpmn:task id="EnterUserData" name="Enter User Data"/>
+    <bpmn:exclusiveGateway id="CheckAge" name="Is Age > 6?"/>
+    <bpmn:exclusiveGateway id="CheckUsername" name="Valid Username?"/>
+    <bpmn:task id="CreateAccount" name="Create Account"/>
+    <bpmn:endEvent id="EndEvent" name="Registration Complete"/>
+    <bpmn:endEvent id="RejectAge" name="Reject: Too Young"/>
+    <bpmn:endEvent id="RejectUsername" name="Reject: Invalid Username"/>
+    <bpmn:sequenceFlow id="flow1" sourceRef="StartEvent" targetRef="EnterUserData"/>
+    <bpmn:sequenceFlow id="flow2" sourceRef="EnterUserData" targetRef="CheckAge"/>
+    <bpmn:sequenceFlow id="flow3" sourceRef="CheckAge" targetRef="CheckUsername"/>
+    <bpmn:sequenceFlow id="flow4" sourceRef="CheckAge" targetRef="RejectAge"/>
+    <bpmn:sequenceFlow id="flow5" sourceRef="CheckUsername" targetRef="CreateAccount"/>
+    <bpmn:sequenceFlow id="flow6" sourceRef="CheckUsername" targetRef="RejectUsername"/>
+    <bpmn:sequenceFlow id="flow7" sourceRef="CreateAccount" targetRef="EndEvent"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RegistrationProcess">
       <bpmndi:BPMNShape id="StartEvent_di" bpmnElement="StartEvent">
         <dc:Bounds x="100" y="120" width="36" height="36"/>
@@ -6,10 +32,10 @@
       <bpmndi:BPMNShape id="EnterUserData_di" bpmnElement="EnterUserData">
         <dc:Bounds x="160" y="100" width="120" height="80"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="CheckAge_di" bpmnElement="CheckAge" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="CheckAge_di" bpmnElement="CheckAge">
         <dc:Bounds x="310" y="115" width="50" height="50"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="CheckUsername_di" bpmnElement="CheckUsername" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="CheckUsername_di" bpmnElement="CheckUsername">
         <dc:Bounds x="400" y="115" width="50" height="50"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CreateAccount_di" bpmnElement="CreateAccount">
@@ -24,7 +50,8 @@
       <bpmndi:BPMNShape id="RejectUsername_di" bpmnElement="RejectUsername">
         <dc:Bounds x="400" y="200" width="36" height="36"/>
       </bpmndi:BPMNShape>
-      
+
+      <!-- Edges -->
       <bpmndi:BPMNEdge id="flow1_di" bpmnElement="flow1">
         <di:waypoint x="136" y="138"/>
         <di:waypoint x="160" y="138"/>
@@ -55,4 +82,4 @@
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-</bpmn:definitions>`;
+</bpmn:definitions>
