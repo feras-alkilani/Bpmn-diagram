@@ -2,57 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BPMN Viewer with Animation</title>
+  <title>BPMN User Registration Animation</title>
   <style>
     html, body {
       height: 100%;
       margin: 0;
+      font-family: sans-serif;
     }
 
     #canvas {
-      height: 100%;
+      height: 90vh;
       width: 100%;
+      border: 1px solid #ccc;
     }
 
-    /* أنيميشن وميض */
-    .highlight-animate {
-      animation: flash 1s infinite;
+    #controls {
+      padding: 10px;
+      text-align: center;
     }
 
-    @keyframes flash {
-      0%, 100% { stroke: red; stroke-width: 5px; }
-      50% { stroke: yellow; stroke-width: 3px; }
+    .highlight rect {
+      stroke: #ff0000;
+      stroke-width: 4;
+      fill: #fff3cd !important;
     }
   </style>
 </head>
 <body>
+
+  <div id="controls">
+    <button onclick="startAnimation()">▶️ Run Scenario</button>
+    <button onclick="resetAnimation()">🔁 Reset</button>
+  </div>
   <div id="canvas"></div>
 
   <script src="https://unpkg.com/bpmn-js@18.6.1/dist/bpmn-viewer.development.js"></script>
-
   <script>
     const viewer = new BpmnJS({ container: '#canvas' });
 
-    fetch('diagram.bpmn')
-      .then(response => response.text())
-      .then(xml => viewer.importXML(xml))
-      .then(() => {
-        const elementRegistry = viewer.get('elementRegistry');
-        const graphicsFactory = viewer.get('graphicsFactory');
+    const stepIds = [
+      'StartEvent',
+      'EnterUserData',
+      'CheckAge',
+      'CheckUsername',
+      'CreateAccount',
+      'EndEvent'
+    ];
 
-        // غيّر ID حسب العنصر اللي بدك تحط عليه الأنيميشن
-        const element = elementRegistry.get('Task_1');
+    async function loadDiagram() {
+      const response = await fetch('diagram.bpmn');
+      const xml = await response.text();
+      await viewer.importXML(xml);
+    }
 
+    async function startAnimation() {
+      const elementRegistry = viewer.get('elementRegistry');
+
+      for (let i = 0; i < stepIds.length; i++) {
+        clearHighlights();
+        const element = elementRegistry.get(stepIds[i]);
         if (element) {
-          const gfx = viewer.get('canvas').getGraphics(element);
-          gfx.querySelector('rect, path')?.classList.add('highlight-animate');
-        } else {
-          console.warn('ما لقيت المهمة المطلوبة. تأكد من الـ ID بـ diagram.bpmn');
+          const gfx = viewer.get('graphicsFactory').getShape(element).gfx;
+          gfx.classList.add('highlight');
         }
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+    }
 
-        viewer.get('canvas').zoom('fit-viewport');
-      })
-      .catch(err => console.error('فشل تحميل ملف BPMN', err));
+    function resetAnimation() {
+      clearHighlights();
+    }
+
+    function clearHighlights() {
+      document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+    }
+
+    loadDiagram();
   </script>
 </body>
 </html>
